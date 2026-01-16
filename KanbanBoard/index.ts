@@ -15,6 +15,7 @@ interface Task {
     authorLastName?: string;
     authorEmail?: string;
     authorAvatar?: string;
+    isOptimistic?: boolean;
 }
 
 interface ColumnDefinition {
@@ -116,7 +117,8 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
         lineHeight: 1.5,
         wordWrap: true,
         textOverflow: 'ellipsis', // 'ellipsis', 'clip', 'fade'
-        showTooltipOnOverflow: true
+        showTooltipOnOverflow: true,
+        fontFamily: 'Segoe UI'
     };
 
     private _layoutConfig = {
@@ -241,14 +243,58 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
     }
 
     private updateStyleConfiguration(): void {
-        // Use basic properties that are available
+        const theme = this._context.parameters.themePreset?.raw || 'Light';
+
+        switch (theme) {
+            case 'Dark':
+                this._styleConfig.backgroundColor = '#1f2937'; // Gray 800
+                this._styleConfig.columnBackgroundColor = '#374151'; // Gray 700
+                this._styleConfig.cardBackgroundColor = '#111827'; // Gray 900
+                this._styleConfig.textColor = '#f9fafb'; // Gray 50
+                this._styleConfig.secondaryTextColor = '#9ca3af'; // Gray 400
+                this._styleConfig.primaryColor = '#60a5fa'; // Blue 400
+                break;
+            case 'Blue':
+                this._styleConfig.primaryColor = '#2563eb'; // Blue 600
+                this._styleConfig.backgroundColor = '#eff6ff'; // Blue 50
+                this._styleConfig.columnBackgroundColor = '#dbeafe'; // Blue 100
+                this._styleConfig.cardBackgroundColor = '#ffffff';
+                this._styleConfig.textColor = '#1e3a8a'; // Blue 900
+                this._styleConfig.secondaryTextColor = '#6b7280';
+                break;
+            case 'Green':
+                this._styleConfig.primaryColor = '#059669'; // Emerald 600
+                this._styleConfig.backgroundColor = '#ecfdf5'; // Emerald 50
+                this._styleConfig.columnBackgroundColor = '#d1fae5'; // Emerald 100
+                this._styleConfig.cardBackgroundColor = '#ffffff';
+                this._styleConfig.textColor = '#064e3b'; // Emerald 900
+                this._styleConfig.secondaryTextColor = '#6b7280';
+                break;
+            case 'Light':
+            default:
+                // Standard Light Theme defaults
+                this._styleConfig.backgroundColor = '#faf9f8';
+                this._styleConfig.columnBackgroundColor = '#f5f7fa';
+                this._styleConfig.cardBackgroundColor = '#ffffff';
+                this._styleConfig.textColor = '#1f2937';
+                this._styleConfig.secondaryTextColor = '#6b7280';
+                this._styleConfig.primaryColor = '#3b82f6';
+                break;
+        }
+
+        // Allow manual overrides if provided (Hex codes still work)
+        if (this._context.parameters.primaryColor?.raw) this._styleConfig.primaryColor = this._context.parameters.primaryColor.raw;
+        if (this._context.parameters.backgroundColor?.raw) this._styleConfig.backgroundColor = this._context.parameters.backgroundColor.raw;
+        if (this._context.parameters.columnBackgroundColor?.raw) this._styleConfig.columnBackgroundColor = this._context.parameters.columnBackgroundColor.raw;
+        if (this._context.parameters.cardBackgroundColor?.raw) this._styleConfig.cardBackgroundColor = this._context.parameters.cardBackgroundColor.raw;
+        if (this._context.parameters.textColor?.raw) this._styleConfig.textColor = this._context.parameters.textColor.raw;
+
         if (this._context.parameters.boardHeight?.raw) {
-            // Available property
+            // Handled by CSS container, logical height
         }
         if (this._context.parameters.columnWidth?.raw) {
             this._layoutConfig.columnWidth = this._context.parameters.columnWidth.raw;
         }
-        // Other properties will be added when manifest is properly regenerated
     }
 
     private updateAlignmentConfiguration(): void {
@@ -330,8 +376,8 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
         if (this._context.parameters.shareModalShadow?.raw) {
             this._shareModalConfig.shadow = this._context.parameters.shareModalShadow.raw;
         }
-        if (this._context.parameters.shareModalFontFamily?.raw) {
-            this._shareModalConfig.fontFamily = this._context.parameters.shareModalFontFamily.raw;
+        if (this._context.parameters.fontFamily?.raw) {
+            this._textConfig.fontFamily = this._context.parameters.fontFamily.raw;
         }
         if (this._context.parameters.shareModalFontSize?.raw !== undefined && this._context.parameters.shareModalFontSize.raw !== null) {
             this._shareModalConfig.fontSize = this._context.parameters.shareModalFontSize.raw;
@@ -492,10 +538,25 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
                 dueDate: getValue('duedate'),
                 description: getValue('description'),
                 recordId: recordId,
-                // Map author fields if they exist in dataset aliases
-                authorFirstName: getValue('authorFirstNameField'), // Won't work directly via property-set unless mapped? 
-                // We'll trust the property-set names or direct field mapping if configured
+                authorFirstName: getValue('authorFirstNameField')
             };
+
+            // OPTIMISTIC CHECK: If this task was recently moved locally, prevent dataset from overwriting it immediately
+            if (this._boardData.tasks[task.id] && this._boardData.tasks[task.id].isOptimistic) {
+                const currentOptimisticStatus = this._boardData.tasks[task.id].status;
+                const incomingStatus = getValue('status') || 'Unknown';
+
+                // Normalize for comparison
+                if (currentOptimisticStatus !== incomingStatus) {
+                    // The dataset is still stale (old status), but we moved it.
+                    // Keep our local version.
+                    task.status = currentOptimisticStatus;
+                    task.isOptimistic = true; // Keep flag
+                } else {
+                    // Dataset caught up!
+                    task.isOptimistic = false;
+                }
+            }
 
             // Add to tasks map
             tasks[task.id] = task;
@@ -1585,8 +1646,14 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
 
         task.status = targetColumn.statusValues[0] || targetColumn.title;
 
+        // OPTIMISTIC UPDATE:
+        // Mark this task as having a "pending" status so consecutive updates don't revert it
+        // until we get a confirmation (or we just trust the UI state for a bit)
+        task.isOptimistic = true;
+
         this.renderBoard();
 
+        // Prepare Output to trigger Power Apps OnChange
         this._lastUpdatedTask = taskId;
         this._pendingUpdate = true;
         this._notifyOutputChanged();
@@ -1595,11 +1662,13 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
     public getOutputs(): IOutputs {
         const lastMovedTask = this._lastUpdatedTask ? this._boardData.tasks[this._lastUpdatedTask] : null;
 
+        // Use a robust output object matching what typical Canvas Apps expect
         return {
             updatedTasksData: JSON.stringify(this._boardData),
             lastMovedTask: lastMovedTask ? JSON.stringify({
-                taskId: lastMovedTask.recordId || lastMovedTask.id,
+                taskId: lastMovedTask.recordId || lastMovedTask.id, // Prefer recordId for Patch
                 newStatus: lastMovedTask.status,
+                previousStatus: this._sourceColumnId ? this._boardData.columns[this._sourceColumnId].title : "",
                 title: lastMovedTask.title,
                 timestamp: new Date().toISOString()
             }) : ""
@@ -2072,45 +2141,86 @@ export class KanbanBoard implements ComponentFramework.StandardControl<IInputs, 
     }
 
     private setupDragEvents(taskElement: HTMLElement): void {
-        taskElement.draggable = true;
+        taskElement.setAttribute('draggable', 'true'); // Explicit attribute
+        taskElement.style.cursor = 'grab';
 
         taskElement.addEventListener('dragstart', (e) => {
+            // Critical: Store ID in class instance to bypass dataTransfer restrictions
             this._draggedElement = taskElement;
             this._draggedTaskId = taskElement.getAttribute('data-task-id');
             this._sourceColumnId = (taskElement.parentElement as HTMLElement).getAttribute('data-column-id');
+
             taskElement.style.opacity = '0.5';
-            e.dataTransfer!.effectAllowed = 'move';
+
+            // Required for Firefox / some browsers to initiate drag
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', this._draggedTaskId || 'dummy'); // Fallback
+            }
+
+            // Do NOT stop propagation here immediately, let it bubble to initiate?
+            // Actually, stopping propagation is safer to prevent Power Apps from cancelling it.
+            e.stopPropagation();
         });
 
-        taskElement.addEventListener('dragend', () => {
+        taskElement.addEventListener('dragend', (e) => {
             taskElement.style.opacity = '1';
             this._draggedElement = null;
+            // Do not clear _draggedTaskId immediately if we need it in drop? 
+            // Actually drop happens before dragend.
             this._draggedTaskId = null;
             this._sourceColumnId = null;
+            e.preventDefault();
+            e.stopPropagation();
         });
     }
 
     private setupDropZone(container: HTMLElement): void {
+        // Essential: 'dragover' MUST prevent default to allow dropping
         container.addEventListener('dragover', (e) => {
             e.preventDefault();
-            e.dataTransfer!.dropEffect = 'move';
+            e.stopPropagation();
+            if (e.dataTransfer) {
+                e.dataTransfer.dropEffect = 'move';
+            }
             container.style.backgroundColor = this.hexToRgba(this._styleConfig.primaryColor, 0.1);
         });
 
-        container.addEventListener('dragleave', () => {
+        container.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            container.style.backgroundColor = this.hexToRgba(this._styleConfig.primaryColor, 0.1);
+        });
+
+        container.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             container.style.backgroundColor = '';
         });
 
         container.addEventListener('drop', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             container.style.backgroundColor = '';
 
-            if (!this._draggedTaskId || !this._sourceColumnId) return;
+            // Use internal state instead of e.dataTransfer.getData
+            const taskId = this._draggedTaskId;
+            const sourceCol = this._sourceColumnId;
+
+            // Check if we have valid drag data
+            if (!taskId || !sourceCol) {
+                console.warn("Drop ignored: No active task ID found in internal state.");
+                return;
+            }
 
             const targetColumnId = container.getAttribute('data-column-id');
             if (!targetColumnId) return;
 
-            this.moveTask(this._draggedTaskId, this._sourceColumnId, targetColumnId);
+            // Prevent drop in same column if that's desired (optional)
+            if (sourceCol === targetColumnId) return;
+
+            console.log(`Dropping Task ${taskId} from ${sourceCol} to ${targetColumnId}`);
+            this.moveTask(taskId, sourceCol, targetColumnId);
         });
     }
 

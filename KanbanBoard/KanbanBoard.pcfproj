@@ -11,7 +11,7 @@
   <PropertyGroup>
     <Name>KanbanBoard</Name>
     <ProjectGuid>b3d6b5f4-1b8a-4f5d-9c8e-2a1b3c4d5e6f</ProjectGuid>
-    <OutputPath>$(MSBuildThisFileDirectory)out\controls</OutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)out/controls</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,9 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ExcludeDirectories Include="$(MSBuildThisFileDirectory)bin\**" />
-    <ExcludeDirectories Include="$(MSBuildThisFileDirectory)obj\**" />
-    <ExcludeDirectories Include="$(OutputPath)\**" />
+    <ExcludeDirectories Include="$(MSBuildThisFileDirectory)bin/**" />
+    <ExcludeDirectories Include="$(MSBuildThisFileDirectory)obj/**" />
+    <ExcludeDirectories Include="$(OutputPath)/**" />
     <ExcludeDirectories Include="$(MSBuildThisFileDirectory)*.pcfproj" />
     <ExcludeDirectories Include="$(MSBuildThisFileDirectory)*.pcfproj.user" />
     <ExcludeDirectories Include="$(MSBuildThisFileDirectory).gitignore" />
@@ -39,7 +39,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)**" Exclude="@(ExcludeDirectories)" />
-    <Content Include="$(OutputPath)\$(Name)\**">
+    <Content Include="$(OutputPath)/$(Name)/**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

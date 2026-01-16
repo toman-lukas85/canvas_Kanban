@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <manifest>
-  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.0" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" api-version="1.3.18">
+  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.2" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" api-version="1.3.18">
     <external-service-usage enabled="false"/>
     <data-set name="taskDataSet" display-name-key="1. Task Data Source" cds-data-set-options="displayCommandBar:false;displayViewSelector:false;displayQuickCreateButton:false">
       <property-set name="id" display-name-key="Task ID" description-key="Unique identifier for the task" of-type="SingleLine.Text" usage="bound" required="true"/>
       <property-set name="title" display-name-key="Task Title" description-key="Title or description of the task" of-type="SingleLine.Text" usage="bound" required="true"/>
-      <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="SingleLine.Text" usage="bound" required="true"/>
+      <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="OptionSet" usage="bound" required="true"/>
       <property-set name="priority" display-name-key="Task Priority" description-key="Priority level of the task" of-type="OptionSet" usage="bound" required="false"/>
       <property-set name="assignedto" display-name-key="Assigned To" description-key="Person assigned to the task" of-type="SingleLine.Text" usage="bound" required="false"/>
       <property-set name="duedate" display-name-key="Due Date" description-key="Due date for the task" of-type="DateAndTime.DateOnly" usage="bound" required="false"/>
@@ -17,17 +17,46 @@
     <property name="columnWidth" display-name-key="3. Column Width" description-key="Width of each column in pixels (set 0 for auto-fit)" of-type="Whole.None" usage="input" required="false"/>
     <property name="columnSpacing" display-name-key="3. Column Spacing" description-key="Gap between columns in pixels" of-type="Whole.None" usage="input" required="false"/>
     <property name="cardSpacing" display-name-key="3. Card Spacing" description-key="Gap between cards in pixels" of-type="Whole.None" usage="input" required="false"/>
-    <property name="boardHorizontalAlignment" display-name-key="4. Board Alignment" description-key="Horizontal alignment of the board container (Left, Center, Right, Stretch)" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="columnsHorizontalAlignment" display-name-key="4. Column Alignment" description-key="Alignment of columns within the board (Left, Center, Right, Justify)" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="cardsVerticalAlignment" display-name-key="4. Card Alignment" description-key="Vertical alignment of cards within a column (Top, Middle, Bottom)" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="textAlignment" display-name-key="4. Text Alignment" description-key="Text alignment within cards (Left, Center, Right)" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="themePreset" display-name-key="5. Theme Preset" description-key="Quick theme selection (Light, Dark, Corporate Blue, etc.)" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="boardHorizontalAlignment" display-name-key="4. Board Alignment" description-key="Horizontal alignment of the board container" of-type="Enum" usage="input" required="false" default-value="Left">
+      <value name="Left" display-name-key="Left">Left</value>
+      <value name="Center" display-name-key="Center">Center</value>
+      <value name="Right" display-name-key="Right">Right</value>
+    </property>
+    <property name="columnsHorizontalAlignment" display-name-key="4. Column Alignment" description-key="Alignment of columns within the board" of-type="Enum" usage="input" required="false" default-value="Left">
+      <value name="Left" display-name-key="Left">Left</value>
+      <value name="Center" display-name-key="Center">Center</value>
+      <value name="Right" display-name-key="Right">Right</value>
+      <value name="SpaceBetween" display-name-key="Space Between">SpaceBetween</value>
+    </property>
+    <property name="cardsVerticalAlignment" display-name-key="4. Card Alignment" description-key="Vertical alignment of cards within a column" of-type="Enum" usage="input" required="false" default-value="Top">
+      <value name="Top" display-name-key="Top">Top</value>
+      <value name="Center" display-name-key="Middle">Center</value>
+      <value name="Bottom" display-name-key="Bottom">Bottom</value>
+    </property>
+    <property name="textAlignment" display-name-key="4. Text Alignment" description-key="Text alignment within cards" of-type="Enum" usage="input" required="false" default-value="Left">
+      <value name="Left" display-name-key="Left">Left</value>
+      <value name="Center" display-name-key="Center">Center</value>
+      <value name="Right" display-name-key="Right">Right</value>
+    </property>
+    <property name="themePreset" display-name-key="5. Theme Preset" description-key="Quick theme selection" of-type="Enum" usage="input" required="false" default-value="Light">
+      <value name="Light" display-name-key="Light (Standard)">Light</value>
+      <value name="Dark" display-name-key="Dark Mode">Dark</value>
+      <value name="Blue" display-name-key="Corporate Blue">Blue</value>
+      <value name="Green" display-name-key="Forest Green">Green</value>
+    </property>
     <property name="primaryColor" display-name-key="5. Primary Color" description-key="Main accent color (Hex code)" of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="backgroundColor" display-name-key="5. Board Background" description-key="Background color of the board area" of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="columnBackgroundColor" display-name-key="5. Column Background" description-key="Background color of column containers" of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="cardBackgroundColor" display-name-key="5. Card Background" description-key="Background color of task cards" of-type="SingleLine.Text" usage="input" required="false"/>
     <property name="textColor" display-name-key="5. Text Color" description-key="Primary text color" of-type="SingleLine.Text" usage="input" required="false"/>
-    <property name="fontFamily" display-name-key="6. Font Family" description-key="Font family name (e.g. Segoe UI, Arial)" of-type="SingleLine.Text" usage="input" required="false"/>
+    <property name="fontFamily" display-name-key="6. Font Family" description-key="Font family name" of-type="Enum" usage="input" required="false" default-value="Segoe UI">
+      <value name="Segoe UI" display-name-key="Segoe UI">Segoe UI</value>
+      <value name="Arial" display-name-key="Arial">Arial</value>
+      <value name="Roboto" display-name-key="Roboto">Roboto</value>
+      <value name="Helvetica" display-name-key="Helvetica">Helvetica</value>
+      <value name="Verdana" display-name-key="Verdana">Verdana</value>
+      <value name="Comic Sans MS" display-name-key="Comic Sans MS">Comic Sans MS</value>
+    </property>
     <property name="fontSize" display-name-key="6. Font Size" description-key="Base font size in rounded pixels" of-type="Whole.None" usage="input" required="false"/>
     <property name="enableMultilineText" display-name-key="6. Multiline Text" description-key="Allow text to wrap to multiple lines" of-type="TwoOptions" usage="input" required="false"/>
     <property name="maxTextLines" display-name-key="6. Max Text Lines" description-key="Maximum lines to show before truncating" of-type="Whole.None" usage="input" required="false"/>
@@ -86,7 +115,7 @@
     <property name="customAuthorFormat" display-name-key="7. Custom Author Fmt" description-key="Custom format" of-type="SingleLine.Text" usage="input" required="false"/>
     <resources>
       <code path="bundle.js" order="1"/>
-      <css path="css/KanbanBoard.css" order="1"/>
+      <css path="KanbanBoard.css" order="1"/>
     </resources>
     <feature-usage>
       <uses-feature name="WebAPI" required="true"/>

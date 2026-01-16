@@ -1,0 +1,1 @@
+/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/obj/Release/KanbanBoard.pcfproj.CoreCompileInputs.cache
