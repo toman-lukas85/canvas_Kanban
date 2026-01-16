@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Debug Preview</title>
+    <link rel="stylesheet" href="css/KanbanBoard.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Segoe UI, sans-serif;
+            background: #f0f0f0;
+        }
+
+        #root {
+            height: 90vh;
+            background: white;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+
+        #debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 200px;
+            background: #333;
+            color: #0f0;
+            font-family: monospace;
+            padding: 10px;
+            overflow: auto;
+            z-index: 9999;
+            opacity: 0.9;
+            box-sizing: border-box;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid #444;
+            padding: 2px 0;
+        }
+
+        .log-error {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Kanban Debug Preview</h1>
+    <div id="root"></div>
+    <div id="debug-console"></div>
+
+    <script>
+        // Custom on-screen logger
+        const debugConsole = document.getElementById('debug-console');
+        function log(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = 'log-entry' + (type === 'error' ? ' log-error' : '');
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            debugConsole.appendChild(div);
+            console[type === 'error' ? 'error' : 'log'](msg);
+        }
+
+        window.onerror = function (msg, url, line, col, error) {
+            log(`ERROR: ${msg} directly at ${url}:${line}:${col}`, 'error');
+            return false;
+        };
+
+        log("Starting custom preview...");
+    </script>
+
+    <script src="bundle.js"></script>
+
+    <script>
+        log("Bundle loaded. Checking for KanbanComponents...");
+
+        const mockContext = {
+            parameters: {
+                taskDataSet: {
+                    loading: false,
+                    sortedRecordIds: [],
+                    records: {},
+                    columns: [],
+                    filtering: {}
+                },
+                boardHeight: { raw: 800 },
+                columnWidth: { raw: 300 },
+                themePreset: { raw: "Light" },
+                enableDragDrop: { raw: true },
+                // Add all potentially accessed parameters to avoid undefined errors
+                enableMultilineText: { raw: true },
+                maxTextLines: { raw: 3 },
+                textLineHeight: { raw: 1.5 },
+                enableWordWrap: { raw: true },
+                showTextTooltip: { raw: true },
+                boardHorizontalAlignment: { raw: 'Left' },
+                columnsHorizontalAlignment: { raw: 'Left' },
+                cardsVerticalAlignment: { raw: 'Top' },
+                textAlignment: { raw: 'Left' },
+                columnSpacing: { raw: 16 },
+                cardSpacing: { raw: 10 },
+                columnMinWidth: { raw: 250 },
+                columnMaxWidth: { raw: 500 },
+                showPriorityBadge: { raw: true },
+                // Mock resources
+                shareModalOverlayColor: { raw: 'rgba(0,0,0,0.3)' },
+                shareModalOverlayOpacity: { raw: 0.3 },
+                shareModalBorderRadius: { raw: 8 },
+                shareModalShadow: { raw: 'Medium' },
+                shareModalFontFamily: { raw: 'Segoe UI' },
+                shareModalFontSize: { raw: 14 },
+                shareModalTextColor: { raw: '#1f2937' },
+                shareModalHeaderColor: { raw: '#111827' },
+                shareModalBackgroundColor: { raw: '#ffffff' },
+                shareModalPadding: { raw: 20 },
+                shareModalTextAlignment: { raw: 'Left' }
+            },
+            mode: { isControlDisabled: false, isVisible: true },
+            utils: {
+                getEntityMetadata: () => ({})
+            },
+            resources: {
+                getString: (id) => id
+            }
+        };
+
+        window.onload = function () {
+            try {
+                if (window.KanbanComponents && window.KanbanComponents.KanbanBoard) {
+                    log("Found KanbanBoard constructor. Initializing...");
+                    const control = new window.KanbanComponents.KanbanBoard();
+                    const container = document.getElementById("root");
+
+                    control.init(mockContext, () => log("Output changed"), {}, container);
+                    log("Control.init() called.");
+
+                    control.updateView(mockContext);
+                    log("Control.updateView() called. Board should be visible.");
+                } else {
+                    log("CRITICAL: window.KanbanComponents.KanbanBoard is undefined.", 'error');
+                    log("Available globals: " + Object.keys(window).filter(k => k.includes('Kanban')), 'error');
+                }
+            } catch (e) {
+                log("EXCEPTION during init: " + e.message, 'error');
+                log(e.stack, 'error');
+            }
+        };
+    </script>
+</body>
+
+</html>

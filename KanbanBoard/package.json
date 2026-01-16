@@ -8,13 +8,13 @@
     "clean": "pcf-scripts clean",
     "lint": "pcf-scripts lint",
     "lint:fix": "pcf-scripts lint fix",
-    "rebuild": "pcf-scripts rebuild",
+    "rebuild": "pcf-scripts clean && pcf-scripts build",
     "start": "pcf-scripts start",
+    "start:custom": "npm run build && cd out/controls && python3 -m http.server 8181",
     "start:watch": "pcf-scripts start watch",
     "refreshTypes": "pcf-scripts refreshTypes"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@eslint/js": "^9.25.1",
     "@microsoft/eslint-plugin-power-apps": "^0.2.51",
