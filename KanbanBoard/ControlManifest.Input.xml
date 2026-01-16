@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.0" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" >
+    <external-service-usage enabled="false">
+    </external-service-usage>
+    
+    <!-- Dataset binding for Dataverse/SharePoint -->
+    <data-set name="taskDataSet" display-name-key="Task Records" cds-data-set-options="displayCommandBar:false;displayViewSelector:false;displayQuickCreateButton:false">
+      <property-set name="id" display-name-key="Task ID" description-key="Unique identifier for the task" of-type="SingleLine.Text" usage="bound" required="true" />
+      <property-set name="title" display-name-key="Task Title" description-key="Title or description of the task" of-type="SingleLine.Text" usage="bound" required="true" />
+      <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="SingleLine.Text" usage="bound" required="true" />
+      <property-set name="priority" display-name-key="Task Priority" description-key="Priority level of the task" of-type="OptionSet" usage="bound" required="false" />
+      <property-set name="assignedto" display-name-key="Assigned To" description-key="Person assigned to the task" of-type="SingleLine.Text" usage="bound" required="false" />
+      <property-set name="duedate" display-name-key="Due Date" description-key="Due date for the task" of-type="DateAndTime.DateOnly" usage="bound" required="false" />
+      <property-set name="description" display-name-key="Description" description-key="Detailed description of the task" of-type="Multiple" usage="bound" required="false" />
+    </data-set>
+    
+    <!-- Column Configuration -->
+    <property name="columnDefinitions" display-name-key="Column Definitions" description-key="JSON array defining columns" of-type="Multiple" usage="input" required="false" />
+    <property name="quickColumnSetup" display-name-key="Quick Column Setup" description-key="Quick setup format: Status1,Status2,Status3" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Layout and Alignment -->
+    <property name="boardHorizontalAlignment" display-name-key="Board Horizontal Alignment" description-key="Options: Left,Center,Right,Stretch" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="columnsHorizontalAlignment" display-name-key="Columns Horizontal Alignment" description-key="Options: Left,Center,Right,Stretch" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="cardsVerticalAlignment" display-name-key="Cards Vertical Alignment" description-key="Options: Top,Middle,Bottom,Stretch" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="textAlignment" display-name-key="Text Alignment" description-key="Options: Left,Center,Right,Justify" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Text Configuration -->
+    <property name="enableMultilineText" display-name-key="Enable Multiline Text" description-key="Allow text to wrap to multiple lines" of-type="TwoOptions" usage="input" required="false" />
+    <property name="maxTextLines" display-name-key="Maximum Text Lines" description-key="Maximum number of lines to display (default: 3)" of-type="Whole.None" usage="input" required="false" />
+    <property name="textLineHeight" display-name-key="Text Line Height" description-key="Line height multiplier (default: 1.5)" of-type="Decimal" usage="input" required="false" />
+    <property name="enableWordWrap" display-name-key="Enable Word Wrap" description-key="Allow text to break at word boundaries" of-type="TwoOptions" usage="input" required="false" />
+    <property name="showTextTooltip" display-name-key="Show Text Tooltip" description-key="Show full text on hover when truncated" of-type="TwoOptions" usage="input" required="false" />
+    
+    <!-- Legacy properties for backward compatibility -->
+    <property name="tasksData" display-name-key="Tasks Data (Legacy)" description-key="JSON string containing tasks data - use for testing only" of-type="SingleLine.Text" usage="bound" required="false" />
+    
+    <!-- Output properties for data changes -->
+    <property name="updatedTasksData" display-name-key="Updated Tasks Data" description-key="Updated tasks data after drag and drop" of-type="SingleLine.Text" usage="output" />
+    <property name="lastMovedTask" display-name-key="Last Moved Task" description-key="Information about the last moved task" of-type="SingleLine.Text" usage="output" />
+    <property name="triggerUpdate" display-name-key="Trigger Update" description-key="Triggers when a task needs to be updated" of-type="TwoOptions" usage="output" />
+    <property name="columnConfiguration" display-name-key="Current Column Configuration" description-key="Current active column configuration as JSON" of-type="SingleLine.Text" usage="output" />
+    
+    <!-- Configuration properties -->
+    <property name="boardHeight" display-name-key="Board Height" description-key="Height of the kanban board in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="columnWidth" display-name-key="Column Width" description-key="Width of each column in pixels (0 = auto-width)" of-type="Whole.None" usage="input" required="false" />
+    <property name="columnMinWidth" display-name-key="Column Min Width" description-key="Minimum width of each column in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="columnMaxWidth" display-name-key="Column Max Width" description-key="Maximum width of each column in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="enableDragDrop" display-name-key="Enable Drag Drop" description-key="Enable or disable drag and drop functionality" of-type="TwoOptions" usage="input" required="false" />
+    <property name="columnSpacing" display-name-key="Column Spacing" description-key="Spacing between columns in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="cardSpacing" display-name-key="Card Spacing" description-key="Spacing between cards in pixels" of-type="Whole.None" usage="input" required="false" />
+    
+    <!-- Border Radius and Shadow Configuration -->
+    <property name="boardBorderRadius" display-name-key="Board Border Radius" description-key="Border radius for the entire board in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="columnBorderRadius" display-name-key="Column Border Radius" description-key="Border radius for columns in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="cardBorderRadius" display-name-key="Card Border Radius" description-key="Border radius for task cards in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="badgeBorderRadius" display-name-key="Badge Border Radius" description-key="Border radius for badges and pills in pixels" of-type="Whole.None" usage="input" required="false" />
+    
+    <!-- Shadow Configuration -->
+    <property name="boardShadow" display-name-key="Board Shadow" description-key="Shadow intensity: None,Subtle,Medium,Strong,Custom" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="columnShadow" display-name-key="Column Shadow" description-key="Shadow intensity: None,Subtle,Medium,Strong,Custom" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="cardShadow" display-name-key="Card Shadow" description-key="Shadow intensity: None,Subtle,Medium,Strong,Custom" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="cardHoverShadow" display-name-key="Card Hover Shadow" description-key="Shadow intensity: None,Subtle,Medium,Strong,Custom" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Custom Shadow Values -->
+    <property name="customBoardShadow" display-name-key="Custom Board Shadow" description-key="Custom CSS shadow for board (e.g., '0 4px 6px rgba(0,0,0,0.1)')" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="customColumnShadow" display-name-key="Custom Column Shadow" description-key="Custom CSS shadow for columns" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="customCardShadow" display-name-key="Custom Card Shadow" description-key="Custom CSS shadow for cards" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="customCardHoverShadow" display-name-key="Custom Card Hover Shadow" description-key="Custom CSS shadow for cards on hover" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Hover Effects Configuration -->
+    <property name="enableHoverEffects" display-name-key="Enable Hover Effects" description-key="Enable hover animations and effects" of-type="TwoOptions" usage="input" required="false" />
+    <property name="hoverTransitionDuration" display-name-key="Hover Transition Duration" description-key="Duration of hover transitions in milliseconds" of-type="Whole.None" usage="input" required="false" />
+    <property name="cardHoverScale" display-name-key="Card Hover Scale" description-key="Scale factor for cards on hover (e.g., 1.02 for 2% enlargement)" of-type="Decimal" usage="input" required="false" />
+    <property name="cardHoverElevation" display-name-key="Card Hover Elevation" description-key="Additional elevation for cards on hover in pixels" of-type="Whole.None" usage="input" required="false" />
+    
+    <!-- Typography and Style properties -->
+    <property name="fontFamily" display-name-key="Font Family" description-key="Options: Arial,Segoe UI,Helvetica,Times New Roman,Georgia,Verdana,Calibri,Tahoma,Open Sans,Roboto" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="fontSize" display-name-key="Font Size" description-key="Base font size in pixels" of-type="Whole.None" usage="input" required="false" />
+    
+    <!-- Color properties -->
+    <property name="primaryColor" display-name-key="Primary Color" description-key="Primary color for borders and accents" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="backgroundColor" display-name-key="Background Color" description-key="Main background color of the board" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="columnBackgroundColor" display-name-key="Column Background Color" description-key="Background color for columns" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="cardBackgroundColor" display-name-key="Card Background Color" description-key="Background color for task cards" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="textColor" display-name-key="Text Color" description-key="Primary text color" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="secondaryTextColor" display-name-key="Secondary Text Color" description-key="Secondary text color for metadata" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Priority colors -->
+    <property name="highPriorityColor" display-name-key="High Priority Color" description-key="Color for high priority tasks" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="mediumPriorityColor" display-name-key="Medium Priority Color" description-key="Color for medium priority tasks" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="lowPriorityColor" display-name-key="Low Priority Color" description-key="Color for low priority tasks" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Theme Configuration -->
+    <property name="themePreset" display-name-key="Theme Preset" description-key="Options: Custom,Light,Dark,Corporate Blue,Modern Green,Warm Orange,Cool Purple,Monochrome,High Contrast" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Author/Assignee Display Configuration -->
+    <property name="showAuthorBadge" display-name-key="Show Author Badge" description-key="Display author/assignee badge on task cards" of-type="TwoOptions" usage="input" required="false" />
+    <property name="authorDisplayFormat" display-name-key="Author Display Format" description-key="Options: Full Name,First Name Only,Last Name Only,Initials,Email,Custom" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="authorPosition" display-name-key="Author Badge Position" description-key="Options: Top Right,Top Left,Bottom Right,Bottom Left,Inline" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="customAuthorFormat" display-name-key="Custom Author Format" description-key="Custom format string for author display" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="showAuthorAvatar" display-name-key="Show Author Avatar" description-key="Display avatar/profile picture for author" of-type="TwoOptions" usage="input" required="false" />
+    <property name="authorAvatarSize" display-name-key="Author Avatar Size" description-key="Size of author avatar in pixels" of-type="Whole.None" usage="input" required="false" />
+    <property name="authorBadgeColor" display-name-key="Author Badge Color" description-key="Background color for author badge" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <!-- Data field mapping for author information -->
+    <property name="authorFirstNameField" display-name-key="Author First Name Field" description-key="Field name for author's first name" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="authorLastNameField" display-name-key="Author Last Name Field" description-key="Field name for author's last name" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="authorEmailField" display-name-key="Author Email Field" description-key="Field name for author's email" of-type="SingleLine.Text" usage="input" required="false" />
+    <property name="authorAvatarField" display-name-key="Author Avatar Field" description-key="Field name for author's avatar URL" of-type="SingleLine.Text" usage="input" required="false" />
+    
+    <resources>
+      <code path="index.ts" order="1"/>
+      <css path="css/KanbanBoard.css" order="1" />
+    </resources>
+    
+    <feature-usage>
+      <uses-feature name="WebAPI" required="true" />
+    </feature-usage>
+  </control>
+</manifest>

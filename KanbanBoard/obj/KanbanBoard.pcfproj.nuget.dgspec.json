@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/KanbanBoard.pcfproj": {}
+  },
+  "projects": {
+    "/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/KanbanBoard.pcfproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/KanbanBoard.pcfproj",
+        "projectName": "KanbanBoard",
+        "projectPath": "/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/KanbanBoard.pcfproj",
+        "packagesPath": "/Users/lukastoman/.nuget/packages/",
+        "outputPath": "/Users/lukastoman/Components/canvas_Kanban/KanbanBoard/obj/",
+        "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
+        "configFilePaths": [
+          "/Users/lukastoman/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net462"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net462": {
+            "targetAlias": "net462",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net462": {
+          "targetAlias": "net462",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Microsoft.PowerApps.MSBuild.Pcf": {
+              "target": "Package",
+              "version": "[1.*, )"
+            }
+          }
+        }
+      }
+    }
+  }
+}
