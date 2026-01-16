@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <manifest>
-  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.2" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" api-version="1.3.18">
+  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.3" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" api-version="1.3.18">
     <external-service-usage enabled="false"/>
     <data-set name="taskDataSet" display-name-key="1. Task Data Source" cds-data-set-options="displayCommandBar:false;displayViewSelector:false;displayQuickCreateButton:false">
       <property-set name="id" display-name-key="Task ID" description-key="Unique identifier for the task" of-type="SingleLine.Text" usage="bound" required="true"/>
       <property-set name="title" display-name-key="Task Title" description-key="Title or description of the task" of-type="SingleLine.Text" usage="bound" required="true"/>
-      <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="OptionSet" usage="bound" required="true"/>
-      <property-set name="priority" display-name-key="Task Priority" description-key="Priority level of the task" of-type="OptionSet" usage="bound" required="false"/>
+      <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="SingleLine.Text" usage="bound" required="true"/>
+      <property-set name="priority" display-name-key="Task Priority" description-key="Priority level of the task" of-type="SingleLine.Text" usage="bound" required="false"/>
       <property-set name="assignedto" display-name-key="Assigned To" description-key="Person assigned to the task" of-type="SingleLine.Text" usage="bound" required="false"/>
       <property-set name="duedate" display-name-key="Due Date" description-key="Due date for the task" of-type="DateAndTime.DateOnly" usage="bound" required="false"/>
       <property-set name="description" display-name-key="Description" description-key="Detailed description of the task" of-type="Multiple" usage="bound" required="false"/>

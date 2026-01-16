@@ -1,6 +1,6 @@
 {
   "name": "kanban-board-pcf",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Kanban Board PCF Component",
   "main": "index.ts",
   "scripts": {
