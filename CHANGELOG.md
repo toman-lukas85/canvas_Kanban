@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.4] - 2026-01-17
+
+### Changed
+- **Schema**: Changed `Task ID` property from `SingleLine.Text` to `Whole.None` (Number) to resolve Delegation Warnings in Power Apps.
+- **Internal**: Updated task interface to handle numeric IDs.
+
 ## [1.0.3] - 2026-01-17
 
 ### Changed

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.3" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" >
+  <control namespace="KanbanComponents" constructor="KanbanBoard" version="1.0.4" display-name-key="KanbanBoard" description-key="Dynamic Kanban Board Component with Configurable States" control-type="standard" >
     <external-service-usage enabled="false">
     </external-service-usage>
     
     <!-- 1. DATA CONFIGURATION -->
     <data-set name="taskDataSet" display-name-key="1. Task Data Source" cds-data-set-options="displayCommandBar:false;displayViewSelector:false;displayQuickCreateButton:false">
-      <property-set name="id" display-name-key="Task ID" description-key="Unique identifier for the task" of-type="SingleLine.Text" usage="bound" required="true" />
+      <property-set name="id" display-name-key="Task ID" description-key="Unique identifier for the task" of-type="Whole.None" usage="bound" required="true" />
       <property-set name="title" display-name-key="Task Title" description-key="Title or description of the task" of-type="SingleLine.Text" usage="bound" required="true" />
       <property-set name="status" display-name-key="Task Status" description-key="Current status of the task" of-type="SingleLine.Text" usage="bound" required="true" />
       <property-set name="priority" display-name-key="Task Priority" description-key="Priority level of the task" of-type="SingleLine.Text" usage="bound" required="false" />
