@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.0] - 2026-01-17
+
+### Changed
+- **Version Bump**: Increased major version to `1.1.0` to force Power Apps to recognize schema changes (Status/Priority -> Text).
+- **Core**: Fully validated `id` (Number), `status` (Text), and `priority` (Text) types.
+
 ## [1.0.4] - 2026-01-17
 
 ### Changed
